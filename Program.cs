@@ -164,11 +164,13 @@ namespace CodexResetRadar
         private readonly CheckBox pinCheck;
         private readonly System.Windows.Forms.Timer refreshTimer;
         private readonly System.Windows.Forms.Timer countdownTimer;
+        private readonly System.Windows.Forms.Timer updateTimer;
         private RadarSnapshot current;
         private string originalEvidence;
         private string translatedEvidence;
         private bool showingTranslation;
         private bool refreshing;
+        private bool checkingUpdate;
         private bool exiting;
         private readonly RadarState state;
 
@@ -278,6 +280,11 @@ namespace CodexResetRadar
             refreshTimer.Tick += async delegate { await RefreshRadarAsync(false); };
             refreshTimer.Start();
 
+            updateTimer = new System.Windows.Forms.Timer();
+            updateTimer.Interval = 6 * 60 * 60 * 1000;
+            updateTimer.Tick += async delegate { await CheckForUpdateAsync(); };
+            updateTimer.Start();
+
             countdownTimer = new System.Windows.Forms.Timer();
             countdownTimer.Interval = 1000;
             countdownTimer.Tick += delegate { UpdateCountdown(); };
@@ -289,9 +296,20 @@ namespace CodexResetRadar
             {
                 if (background) HideToTray();
                 await RefreshRadarAsync(false);
+                await CheckForUpdateAsync();
+            };
+        }
+
+        private async Task CheckForUpdateAsync()
+        {
+            if (checkingUpdate || exiting) return;
+            checkingUpdate = true;
+            try
+            {
                 string staged = await ReleaseUpdater.CheckAndPrepareAsync();
                 if (!string.IsNullOrEmpty(staged) && ReleaseUpdater.StartApply(staged, Application.ExecutablePath)) ExitApplication();
-            };
+            }
+            finally { checkingUpdate = false; }
         }
 
         private static Label MakeLabel(string text, int x, int y, int width, int height, float size, FontStyle style, Color color)
@@ -2193,7 +2211,7 @@ namespace CodexResetRadar
 
     internal static class ReleaseUpdater
     {
-        internal const string CurrentVersion = "1.0.2";
+        internal const string CurrentVersion = "1.0.3";
         private const string ManifestUrl = "https://github.com/987144016/codex-reset-radar/releases/latest/download/latest.json";
         private const string ReleasePrefix = "https://github.com/987144016/codex-reset-radar/releases/download/";
         private static readonly JavaScriptSerializer Json = new JavaScriptSerializer();
@@ -2203,7 +2221,8 @@ namespace CodexResetRadar
             try
             {
                 ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
-                string body = await SafeHttp.DownloadAsync(ManifestUrl, "CodexResetRadar/" + CurrentVersion, null, null);
+                string manifestRequest = ManifestUrl + "?check=" + DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture);
+                string body = await SafeHttp.DownloadAsync(manifestRequest, "CodexResetRadar/" + CurrentVersion, null, null);
                 Dictionary<string, object> manifest = Json.Deserialize<Dictionary<string, object>>(body);
                 Version latest;
                 Version current;
