@@ -1,0 +1,11 @@
+CodexResetRadar.exe
+*.previous
+*.download
+auth.json
+state.json
+update.log
+radar.log
+.superdesign/
+.vs/
+bin/
+obj/
