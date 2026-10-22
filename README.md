@@ -34,7 +34,7 @@
 
 ## 安装与自动更新
 
-从 [GitHub Releases](https://github.com/987144016/codex-reset-radar/releases/latest) 下载 `CodexResetRadar.exe`，放在当前用户有写入权限的文件夹中运行一次。程序启动时从本仓库的 `latest.json` 检查版本；发现新版后下载 GitHub Release 中的程序，核对 SHA-256，退出旧进程、替换并在后台重新启动。断网或更新失败时保留旧版本，详情写入 `%LOCALAPPDATA%\CodexResetRadar\update.log`。另一台电脑不需要 GitHub 登录。
+从 [GitHub Releases](https://github.com/987144016/codex-reset-radar/releases/latest) 下载 `CodexResetRadar.exe`，放在当前用户有写入权限的文件夹中运行一次。程序启动时从最新 Release 的 `latest.json` 检查版本；发现新版后下载 GitHub Release 中的程序，核对 SHA-256，退出旧进程、替换并在后台重新启动。断网或更新失败时保留旧版本，详情写入 `%LOCALAPPDATA%\CodexResetRadar\update.log`。另一台电脑不需要 GitHub 登录。
 
 本机 Codex 的 `auth.json` 只用于在本机读取额度；不会被上传到 GitHub。公开仓库仅包含源码、构建脚本、说明和版本清单。额度快照保存在 `%LOCALAPPDATA%\CodexResetRadar\state.json`，不会进入仓库。
 
