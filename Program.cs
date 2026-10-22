@@ -2193,8 +2193,8 @@ namespace CodexResetRadar
 
     internal static class ReleaseUpdater
     {
-        internal const string CurrentVersion = "1.0.1";
-        private const string ManifestUrl = "https://raw.githubusercontent.com/987144016/codex-reset-radar/main/latest.json";
+        internal const string CurrentVersion = "1.0.2";
+        private const string ManifestUrl = "https://github.com/987144016/codex-reset-radar/releases/latest/download/latest.json";
         private const string ReleasePrefix = "https://github.com/987144016/codex-reset-radar/releases/download/";
         private static readonly JavaScriptSerializer Json = new JavaScriptSerializer();
 
